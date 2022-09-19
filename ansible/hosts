@@ -1,0 +1,10 @@
+---
+all:
+  children: 
+    aws_instance:
+      hosts:
+        34.224.26.161:
+            ansible_ssh_user: ec2-user
+  vars:
+    common_tools:
+

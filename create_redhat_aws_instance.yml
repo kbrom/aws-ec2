@@ -1,0 +1,5 @@
+#This playbook will create redhat instance in AWS and configure it.
+# the following pakcages will be isntalled.
+# python2
+# rsync
+

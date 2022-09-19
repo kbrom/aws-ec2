@@ -1,0 +1,31 @@
+---
+- name: create linux instance in AWS
+  hosts: localhost
+  vars:
+    ansible_connection: local
+    project_dir: ../terraform_dir
+  tasks:
+    # create redhat aws instance
+    - terraform:
+        project_path: '{{ project_dir }}'
+        state: present
+    - command: terraform output
+      args:
+       chdr: '{{ project_dir }}'  
+      register: tf_output
+    - debug: 
+       var: tf_output
+  tags: ['create_instance'] 
+
+- name: Install linux packages on instance 
+  hosts: aws_instance
+  become: yes 
+  tasks:
+    # install common system packages.
+    - yum:
+         name: "{{ item }}"
+         state: present
+      with_items: "{{ common_tools }}"
+  tags: ['never','aws_config']
+
+

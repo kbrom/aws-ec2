@@ -1,0 +1,9 @@
+---
+all:
+  children: 
+    aws_instance:
+      hosts:
+        ${server}:
+            ansible_ssh_user: ${remote_user}
+  vars:
+    common_tools:
