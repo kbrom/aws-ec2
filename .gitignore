@@ -1,7 +1,5 @@
 .idea/
-.idea/**/workspace.xml
-.idea/**/* 
-/terraform_dir/.terraform/* 
-/terraform_dir/terraform.tfstate.backup
-/terraform_dir/terraform.tfstate
-/ansible/site.retry
+.terraform/
+terraform.tfstate.backup
+terraform.tfstate
+site.retry

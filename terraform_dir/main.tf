@@ -36,7 +36,7 @@ resource "aws_security_group" "sg" {
 }
 
 resource "aws_key_pair" "generated-key" {
-  public_key = file("/home/unix/.ssh/id_rsa.pub")
+  public_key = file("id_rsa.pub")
 
 }
 
