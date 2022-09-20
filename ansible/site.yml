@@ -6,7 +6,7 @@
     project_dir: ../terraform_dir
   tasks:
     # create redhat aws instance
-    - terraform:
+    - community.general.terraform:
         project_path: '{{ project_dir }}'
         state: present
     - command: terraform output
