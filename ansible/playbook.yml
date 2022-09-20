@@ -1,8 +1,11 @@
 ---
 - name: "Run the playbook for AWS resources provisioning."
-  hosts: all
+  hosts: localhost
+  vars:
+    ansible_connection: local
   vars:
     aws_region: us-east-1
+    validate_certs: false 
   tasks:
     - name: "Create VPC with cidr block"
       ec2_vpc_net:
@@ -13,6 +16,7 @@
           module: ec2_vpc_net
           this: works
         tenancy: default
+        validate_certs: false 
       register: awx_vpc
     
     - name: "Create Internet Gateway and Associate it with above VPC"
@@ -20,11 +24,13 @@
         vpc_id: "{{ awx_vpc.vpc.id }}"
         region: "{{ aws_region }}"
         state: present
+        validate_certs: false
       register: awx_igw
 
 
     - name: "Create a subnet in the above VPC"
       ec2_vpc_subnet:
+        validate_certs: false 
         state: present
         vpc_id: "{{ awx_vpc.vpc.id }}"
         cidr: 10.10.0.0/20
@@ -36,6 +42,7 @@
 
     - name: "Create Route Table for the public Subnet"
       ec2_vpc_route_table:
+        validate_certs: false 
         vpc_id: "{{ awx_vpc.vpc.id }}"
         region: "{{ aws_region }}"
         tags:
@@ -50,6 +57,7 @@
 
     - name: "Create Security Group rules for EC2 Instance"
       ec2_group:
+        validate_certs: false 
         name: awx_sg
         description: "sg for allowing ssh connections"
         vpc_id: "{{ awx_vpc.vpc.id }}"
@@ -61,11 +69,18 @@
             cidr_ip: 0.0.0.0/0
             rule_desc: allow all connections on port 22
 
+    - name: create key pair using provided aws_public_key variable
+      amazon.aws.ec2_key:
+        validate_certs: false 
+        name: aws-key-us-east-1
+        key_material: "{{ lookup('file','~/.ssh/id_rsa.pub') }}"
+
 
     - name: "Provisioning of a RHEL8 EC2 Instance"
-      ec2:
+      amazon.aws.ec2:
+        validate_certs: false 
         region: "{{ aws_region }}"
-        key_name: aws-awk-key-us-east-1
+        key_name: aws-key-us-east-1
         instance_type: t2.micro
         image: ami-098f16afa9edf40be
         wait: yes
