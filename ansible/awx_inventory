@@ -1,0 +1,35 @@
+---
+all:
+  vars:
+    awx_version: 17.1.0
+    #awx_version: 15.0.1 
+    awx_archive_url: https://github.com/ansible/awx/archive/17.1.0.zip
+    awx_admin_password: admin123
+    apt_packages_required:
+         - nodejs
+         - npm
+         - apt-transport-https 
+         - ca-certificates 
+         - curl 
+         - software-properties-common 
+         - gnupg-agent
+         - python3-pip 
+         - git
+         - unzip
+         - pwgen
+         - ansible 
+    
+    pip_pckages_required:
+        - requests==2.22.0
+        - docker-compose==1.29.2
+        
+   
+  children:
+     awx_instances:
+            hosts:
+              localhost:
+                 ansible_connection: local
+                 remote_user: ec2-user
+
+
+

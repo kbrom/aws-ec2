@@ -85,11 +85,15 @@
         image: ami-098f16afa9edf40be
         wait: yes
         group: awx_sg
-        count: 1
+        count: 3
         vpc_subnet_id: "{{ awx_subnet.subnet.id }}"
         assign_public_ip: yes
       register: awx_instance
 
+    - name: Create ec2-hosts file for next playbook 
+      template: 
+         src: templates/ec2_hosts.j2
+         dest: ec2_hosts
 
     - name: "Debug task to show the public IP of RHEL8 EC2 Instance"
       debug:

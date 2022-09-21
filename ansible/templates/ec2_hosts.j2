@@ -1,0 +1,11 @@
+---
+all:
+  children: 
+    aws_instance:
+      hosts:
+      {% for ec2 in awx_instance.instances %}
+        {{ ec2.public_ip}}:
+            ansible_ssh_user: ec2-user
+      {% endfor %}
+  vars:
+    common_tools:
