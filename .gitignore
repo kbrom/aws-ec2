@@ -3,3 +3,4 @@
 terraform.tfstate.backup
 terraform.tfstate
 site.retry
+venv_python3/

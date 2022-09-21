@@ -1,0 +1,83 @@
+---
+- name: Setup AWX instance. 
+  hosts: awx_instances
+  become: yes
+  remote_user: "{{remote_user}}"
+
+  vars:
+    home_dir: /home/ubuntu
+    awx_dir: "{{home_dir}}/awx-{{awx_version}}"
+
+  tasks:
+    - name: Update the `apt` package index
+      apt:
+        update_cache: yes
+
+    - name: Install required packages for AWX
+      apt:
+        name: "{{ apt_packages_required }}"
+        state: present
+
+
+    - name: Add Docker’s official GPG key
+      apt_key:
+        url: "https://download.docker.com/linux/{{ ansible_distribution | lower }}/gpg"
+        state: present
+
+
+    - name: Register distribution *short* code name
+      shell: lsb_release -cs
+      register: lsb_release
+
+    - name: Set up the stable repository
+      apt_repository:
+        repo: "deb [arch=amd64] https://download.docker.com/linux/{{ ansible_distribution | lower }} {{ ansible_distribution_release | lower }} stable"
+        state: present
+        
+    - name: "[Docker] Install docker-ce"
+      apt:
+          name: docker-ce 
+          state: present
+
+    - name: "[Docker] Add the user ubuntu to group docker"
+      ansible.builtin.user:
+        name: "{{ remote_user}}"
+        group: docker 
+    
+    - name: Install required python packages
+      ansible.builtin.pip:
+        name: "{{ item }}"
+      with_items: "{{ pip_pckages_required }}"
+    
+    - name: Download and unzip AWX zip file. 
+      unarchive:
+        src: "{{ awx_archive_url}}"
+        dest: "{{ home_dir }}"
+        remote_src: yes
+
+    - name: Generate secret_key
+      command: pwgen -N 1 -s 30 
+      register: secret_key
+      tags: 
+        - set-secret
+
+    - name: set secret_key in inventory 
+      ansible.builtin.lineinfile:
+        path: "{{awx_dir}}/installer/inventory"
+        regexp: '^secret_key='
+        line: "secret_key={{secret_key.stdout}}"
+      tags: 
+        - set-secret
+
+    - name: set admin password in inventory 
+      ansible.builtin.lineinfile:
+        path: "{{awx_dir}}/installer/inventory"
+        regexp: '^# admin_password='
+        line: "admin_password={{ awx_admin_password }}"
+
+    - name: Execute AWX install playbook. 
+      command: ansible-playbook -i inventory install.yml
+      args:
+        chdir: "{{awx_dir}}/installer/"
+      tags: 
+        - install_awx
