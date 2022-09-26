@@ -5,7 +5,7 @@ all:
       hosts:
       {% for ec2 in awx_instance.instances %}
         {{ ec2.public_ip}}:
-            ansible_ssh_user: ec2-user
       {% endfor %}
   vars:
+    ansible_ssh_user: ec2-user
     common_tools:

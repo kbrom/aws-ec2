@@ -3,12 +3,13 @@
   hosts: localhost
   vars:
     ansible_connection: local
-  vars:
+    #ansible_python_interpreter: /usr/bin/python3
     aws_region: us-east-1
     validate_certs: false 
   tasks:
     - name: "Create VPC with cidr block"
       ec2_vpc_net:
+        validate_certs: False
         name: "awx_vpc"
         cidr_block: 10.10.0.0/16
         region: "{{ aws_region }}"
@@ -16,7 +17,6 @@
           module: ec2_vpc_net
           this: works
         tenancy: default
-        validate_certs: false 
       register: awx_vpc
     
     - name: "Create Internet Gateway and Associate it with above VPC"
@@ -69,15 +69,19 @@
             cidr_ip: 0.0.0.0/0
             rule_desc: allow all connections on port 22
 
-    - name: create key pair using provided aws_public_key variable
-      amazon.aws.ec2_key:
+    - name: create key pair using provided
+      ec2_key:
         validate_certs: false 
         name: aws-key-us-east-1
         key_material: "{{ lookup('file','~/.ssh/id_rsa.pub') }}"
 
 
     - name: "Provisioning of a RHEL8 EC2 Instance"
-      amazon.aws.ec2:
+      ec2:
+        count_tag:
+          - controller
+          - node01
+          - node02
         validate_certs: false 
         region: "{{ aws_region }}"
         key_name: aws-key-us-east-1

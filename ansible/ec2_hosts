@@ -3,9 +3,9 @@ all:
   children: 
     aws_instance:
       hosts:
-              44.198.186.236:
-              3.223.4.139:
-              44.197.120.161:
-    vars:
-      ansible_ssh_user: ec2-user
+              18.206.163.123:
+              100.26.98.157:
+              54.86.45.21:
+        vars:
+    ansible_ssh_user: ec2-user
     common_tools:
