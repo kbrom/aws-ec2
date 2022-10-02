@@ -73,7 +73,7 @@
       ec2_key:
         validate_certs: false 
         name: aws-key-us-east-1
-        key_material: "{{ lookup('file','~/.ssh/id_rsa.pub') }}"
+        key_material: "{{ lookup('file','y.pub') }}"
 
 
     - name: "Provisioning of a RHEL8 EC2 Instance"
