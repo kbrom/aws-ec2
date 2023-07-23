@@ -3,3 +3,4 @@
 #testing commit
 # this morning
 # again
+run build
